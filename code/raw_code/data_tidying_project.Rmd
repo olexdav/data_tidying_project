@@ -48,7 +48,8 @@ colnames(df2) <- df2[1,]
 
 ```{r save-data, warning=FALSE} 
 ## use saveRDS() to save each object as a .rds file 
-
+saveRDS(df1, "../../data/raw_data/df_departments.rds")
+saveRDS(df2, "../../data/raw_data/df_retail.rds")
 ```
 
 ### Wrangle Data
@@ -78,27 +79,31 @@ df_retail <- df2 %>%
 ## work with df1
 df_department <- df1 %>% 
   ## split Period column into one column called "month" and one called "year"
-  function_name() %>%
+  separate(Period, 
+           into = c("month", "year"), sep = "-") %>%
   ## add a column `value` which contains the 
   ## information from the `Value (in millions)` 
-  function_name() %>%
+  mutate(value = `Value (in millions)`) %>%
   ## group the data frame by the `year` column
-  function_name() %>%
+  group_by(year) %>%
   ## Summarize the data by creating a new column
   ## call this column `n` 
   ## have it contain the sum of the `value` column
-  function_name() %>% 
+  summarize(n = sum(value)) %>% 
   ### create a new column called `business`
   ## set the value of this column to  be "department stores" 
   ## for the entire data set 
-  function_name() %>%
+  mutate(business = "department stores") %>%
   ## reorder column names to be : business, year, n
-  function_name()
+  select(business, year, n)
 ```
 
 ```{r merge-data, warning=FALSE} 
 ## Now, combine the two data frames
-df_total <- function_name()
+#df_total <- df_retail %>%
+#  left_join(df_department, by = c("year" = "year"))
+#df_total <- merge(df_retail, df_department, by.x = "year", by.y = "year")
+df_total <- rbind(df_retail, df_department)
 ```
 
 ```{r plot, warning=FALSE, fig.width=10} 
